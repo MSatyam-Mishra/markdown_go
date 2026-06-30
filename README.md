@@ -2,7 +2,7 @@
 
 **MarkdownGo** is a lightweight, high-performance Go utility for converting various files to Markdown for use with LLMs and related text analysis pipelines. 
 
-Inspired by Microsoft's Python-based *MarkItDown*, this library is built natively in Go. By leveraging Go's concurrency model (goroutines), MarkdownGo provides blazingly fast conversions—especially when extracting and converting files recursively from within ZIP archives.
+Inspired by Microsoft's Python-based *MarkItDown*, this library is built natively in Go. By leveraging Go's concurrency model (goroutines), MarkdownGo provides fast conversions—especially when extracting and converting files recursively from within ZIP archives.
 
 MarkdownGo currently supports conversion from:
 
@@ -43,9 +43,7 @@ MarkdownGo includes a native **Model Context Protocol (MCP)** server, which allo
 
 #### Quick Start
 
-Run the following command anywhere on your machine to automatically install and configure the MarkdownGo MCP server for your favorite AI client! 
-
-*(No manual building or downloading required—Go will fetch it, compile it, and inject it into your client's configuration instantly!)*
+Run the following command to automatically install and configure the MarkdownGo MCP server for your AI client. Go will fetch, compile, and configure the tool.
 
 ```bash
 # To install for Claude Desktop:
@@ -69,7 +67,7 @@ By default, the installer configures the MCP server globally on your machine. Yo
 go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client cursor --scope project
 ```
 
-Restart your AI client and ask it: *"Read the markdown from https://wikipedia.org"* and watch it use MarkdownGo seamlessly!
+Restart your AI client and the tools will be available for use.
 
 ### 3. As a CLI Tool
 To install the MarkdownGo command-line interface globally on your machine:
@@ -140,8 +138,7 @@ result, err := md.ConvertURL(ctx, "https://youtube.com/watch?v=...")
 
 ## Example Web App
 
-We also provide a beautiful, fully-functional Web UI frontend for testing conversions! 
-The UI is built using modern **Shadcn UI** aesthetics, featuring a high-contrast design, clean rounded cards, and full **Dark Mode / Light Mode** support!
+A Web UI frontend for testing conversions is provided in the `example/` directory.
 
 To run it locally:
 ```bash

@@ -184,12 +184,12 @@ func injectAntigravitySkill(scope string) error {
 	skillPath := filepath.Join(skillDir, "SKILL.md")
 	content := `---
 name: markdown_go_mcp
-description: "Native tool to convert local files (PDF, PPTX, DOCX, ZIP) and URLs (Webpages, Youtube Videos) perfectly into markdown."
+description: "Native tool to convert local files (PDF, PPTX, DOCX, ZIP) and URLs (Webpages, Youtube Videos) into markdown."
 ---
 
 # markdown_go_mcp
 
-You have access to a powerful Model Context Protocol (MCP) server that extracts text and data from local files or websites and converts them into markdown.
+This skill provides a Model Context Protocol (MCP) server that extracts text and data from local files or websites and converts them into markdown.
 
 ## When to use this skill
 Use this skill whenever the user asks you to:
