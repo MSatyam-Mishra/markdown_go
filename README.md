@@ -20,7 +20,7 @@ MarkdownGo currently supports conversion from:
 - ... and more!
 
 ## Why Markdown?
-Markdown is extremely close to plain text, with minimal markup or formatting, but still provides a way to represent important document structure. Mainstream LLMs natively "speak" Markdown, and often incorporate Markdown into their responses unprompted. This suggests that they have been trained on vast amounts of Markdown-formatted text, and understand it well. As a side benefit, Markdown conventions are also highly token-efficient.
+Markdown is extremely close to plain text with minimal markup or formatting, yet it still provides a way to represent important document structure. Mainstream LLMs natively "speak" Markdown and often incorporate it into their responses unprompted. This suggests they have been trained on vast amounts of Markdown-formatted text and understand it well. As a side benefit, Markdown conventions are also highly token-efficient.
 
 ## Project Structure
 MarkdownGo follows standard Go project layout conventions to ensure the codebase is highly scalable and easy to navigate for contributors:
@@ -39,7 +39,7 @@ go get github.com/MSatyam-Mishra/markdown_go
 
 ### 2. AI Tool Integration (MCP Server)
 
-MarkdownGo includes a native **Model Context Protocol (MCP)** server, which allows AI agents (like Claude Desktop, Cursor, and Antigravity) to natively use this library as a tool for reading local files and scraping webpages!
+MarkdownGo includes a native **Model Context Protocol (MCP)** server, which allows AI agents (like Claude Desktop, Cursor, and Antigravity) to natively use this library as a tool for reading local files and scraping web pages!
 
 #### Quick Start
 
@@ -126,8 +126,8 @@ result, err := md.ConvertURL(ctx, "https://youtube.com/watch?v=...")
 
 ## Example Web App
 
-We have also provided a beautiful, fully-functional Web UI frontend to test out conversions! 
-The UI is built using modern **Shadcn UI** aesthetics (Vercel style), featuring a high-contrast design, clean rounded cards, and full **Dark Mode / Light Mode** support!
+We also provide a beautiful, fully-functional Web UI frontend for testing conversions! 
+The UI is built using modern **Shadcn UI** aesthetics, featuring a high-contrast design, clean rounded cards, and full **Dark Mode / Light Mode** support!
 
 To run it locally:
 ```bash
