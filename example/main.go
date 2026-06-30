@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,11 +14,15 @@ import (
 	"github.com/MSatyam-Mishra/markdown_go/pkg/converter"
 )
 
+//go:embed index.html
+var indexHTML []byte
+
 func main() {
 	m := markdown_go.NewMarkItDown()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "index.html")
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(indexHTML)
 	})
 
 	http.HandleFunc("/api/convert", func(w http.ResponseWriter, r *http.Request) {

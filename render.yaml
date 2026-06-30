@@ -2,6 +2,6 @@ services:
   - type: web
     name: markdown-go-ui
     env: go
-    buildCommand: "go build -o app ./example/main.go"
-    startCommand: "cd example && ../app"
+    buildCommand: "go build -o server ./example/main.go"
+    startCommand: "./server"
     plan: free
