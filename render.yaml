@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: markdown-go-ui
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
