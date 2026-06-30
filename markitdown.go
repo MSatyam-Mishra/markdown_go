@@ -8,17 +8,19 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/MSatyam-Mishra/markdown_go/pkg/converter"
 )
 
 // MarkItDown is the main orchestrator for conversions.
 type MarkItDown struct {
-	converters map[string]Converter // map of extension to converter
+	converters map[string]converter.Converter // map of extension to converter
 }
 
 // NewMarkItDown initializes a new MarkItDown instance with default converters.
 func NewMarkItDown() *MarkItDown {
 	m := &MarkItDown{
-		converters: make(map[string]Converter),
+		converters: make(map[string]converter.Converter),
 	}
 	m.registerDefaultConverters()
 	return m
@@ -26,42 +28,42 @@ func NewMarkItDown() *MarkItDown {
 
 func (m *MarkItDown) registerDefaultConverters() {
 	// HTML
-	htmlConv := &HTMLConverter{}
+	htmlConv := &converter.HTMLConverter{}
 	m.converters[".html"] = htmlConv
 	m.converters[".htm"] = htmlConv
 
 	// Office and PDF
-	docConv := &DocConverter{}
+	docConv := &converter.DocConverter{}
 	m.converters[".pdf"] = docConv
 	m.converters[".docx"] = docConv
 	m.converters[".pptx"] = docConv
 	m.converters[".pages"] = docConv
 
 	// Data
-	dataConv := &DataConverter{}
+	dataConv := &converter.DataConverter{}
 	m.converters[".csv"] = dataConv
 	m.converters[".json"] = dataConv
 	m.converters[".xml"] = dataConv
 
 	// Zip
-	m.converters[".zip"] = &ZipConverter{markItDown: m}
+	m.converters[".zip"] = &converter.ZipConverter{API: m}
 
 	// Images
-	imgConv := &ImageConverter{}
+	imgConv := &converter.ImageConverter{}
 	m.converters[".jpg"] = imgConv
 	m.converters[".jpeg"] = imgConv
 	m.converters[".png"] = imgConv
 	m.converters[".gif"] = imgConv
 
 	// Audio
-	audioConv := &AudioConverter{}
+	audioConv := &converter.AudioConverter{}
 	m.converters[".mp3"] = audioConv
 	m.converters[".wav"] = audioConv
 	m.converters[".ogg"] = audioConv
 	m.converters[".flac"] = audioConv
 
 	// EPub
-	epubConv := &EpubConverter{htmlConverter: htmlConv}
+	epubConv := &converter.EpubConverter{HTMLConverter: htmlConv}
 	m.converters[".epub"] = epubConv
 }
 
@@ -74,7 +76,7 @@ func (m *MarkItDown) ConvertFile(ctx context.Context, path string) (string, erro
 	defer file.Close()
 
 	ext := strings.ToLower(filepath.Ext(path))
-	opts := &Options{
+	opts := &converter.Options{
 		Extension: ext,
 		FileName:  filepath.Base(path),
 	}
@@ -85,8 +87,8 @@ func (m *MarkItDown) ConvertFile(ctx context.Context, path string) (string, erro
 // ConvertURL handles URL inputs, delegating YouTube URLs to YoutubeConverter, or fetching general webpages.
 func (m *MarkItDown) ConvertURL(ctx context.Context, urlStr string) (string, error) {
 	if strings.Contains(urlStr, "youtube.com") || strings.Contains(urlStr, "youtu.be") {
-		ytConv := &YoutubeConverter{}
-		opts := &Options{URL: urlStr}
+		ytConv := &converter.YoutubeConverter{}
+		opts := &converter.Options{URL: urlStr}
 		return ytConv.Convert(ctx, nil, opts)
 	}
 
@@ -106,17 +108,17 @@ func (m *MarkItDown) ConvertURL(ctx context.Context, urlStr string) (string, err
 	contentType := resp.Header.Get("Content-Type")
 	// If it's HTML, convert it
 	if strings.Contains(strings.ToLower(contentType), "text/html") {
-		htmlConv := &HTMLConverter{}
-		return htmlConv.Convert(ctx, resp.Body, &Options{Extension: ".html", URL: urlStr})
+		htmlConv := &converter.HTMLConverter{}
+		return htmlConv.Convert(ctx, resp.Body, &converter.Options{Extension: ".html", URL: urlStr})
 	}
 
 	return "", fmt.Errorf("unsupported content type from URL: %s", contentType)
 }
 
 // Convert processes an io.Reader stream using the appropriate converter based on Options.
-func (m *MarkItDown) Convert(ctx context.Context, r io.Reader, opts *Options) (string, error) {
+func (m *MarkItDown) Convert(ctx context.Context, r io.Reader, opts *converter.Options) (string, error) {
 	if opts == nil {
-		opts = &Options{}
+		opts = &converter.Options{}
 	}
 
 	conv, ok := m.converters[opts.Extension]

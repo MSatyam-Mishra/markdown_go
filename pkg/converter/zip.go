@@ -1,4 +1,4 @@
-package markdown_go
+package converter
 
 import (
 	"archive/zip"
@@ -12,7 +12,7 @@ import (
 )
 
 type ZipConverter struct {
-	markItDown *MarkItDown
+	API ConverterAPI
 }
 
 func (c *ZipConverter) Convert(ctx context.Context, r io.Reader, opts *Options) (string, error) {
@@ -51,7 +51,7 @@ func (c *ZipConverter) Convert(ctx context.Context, r io.Reader, opts *Options) 
 				FileName:  file.Name,
 			}
 
-			res, err := c.markItDown.Convert(ctx, rc, fileOpts)
+			res, err := c.API.Convert(ctx, rc, fileOpts)
 			if err != nil {
 				// Ignore unsupported files in zip
 				return

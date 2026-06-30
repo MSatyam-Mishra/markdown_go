@@ -1,4 +1,4 @@
-package markdown_go
+package converter
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
-package markdown_go
+package converter
 
 import (
 	"archive/zip"
@@ -9,7 +9,7 @@ import (
 )
 
 type EpubConverter struct {
-	htmlConverter *HTMLConverter
+	HTMLConverter *HTMLConverter
 }
 
 func (c *EpubConverter) Convert(ctx context.Context, r io.Reader, opts *Options) (string, error) {
@@ -33,7 +33,7 @@ func (c *EpubConverter) Convert(ctx context.Context, r io.Reader, opts *Options)
 				continue
 			}
 
-			res, err := c.htmlConverter.Convert(ctx, rc, &Options{Extension: ".html"})
+			res, err := c.HTMLConverter.Convert(ctx, rc, &Options{Extension: ".html"})
 			rc.Close()
 			if err == nil {
 				sb.WriteString(res)

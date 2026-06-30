@@ -22,6 +22,13 @@ MarkdownGo currently supports conversion from:
 ## Why Markdown?
 Markdown is extremely close to plain text, with minimal markup or formatting, but still provides a way to represent important document structure. Mainstream LLMs natively "speak" Markdown, and often incorporate Markdown into their responses unprompted. This suggests that they have been trained on vast amounts of Markdown-formatted text, and understand it well. As a side benefit, Markdown conventions are also highly token-efficient.
 
+## Project Structure
+MarkdownGo follows standard Go project layout conventions to ensure the codebase is highly scalable and easy to navigate for contributors:
+- `markitdown.go`: The root package contains only the main orchestrator (`NewMarkItDown()`) to keep the public API incredibly clean.
+- `pkg/converter/`: Contains all of the specialized data extraction logic and implementations (HTML, PDF, Youtube, etc.).
+- `cmd/markdown_go/`: The entry point for building the global CLI tool.
+- `example/`: A full-featured web app showcasing how to integrate MarkdownGo.
+
 ## Installation
 
 ### 1. As a Go Library
@@ -30,7 +37,27 @@ To use MarkdownGo inside your own Go applications:
 go get github.com/MSatyam-Mishra/markdown_go
 ```
 
-### 2. As a CLI Tool
+### 2. AI Tool Integration (MCP Server)
+
+MarkdownGo includes a native **Model Context Protocol (MCP)** server, which allows AI agents (like Claude Desktop, Cursor, and Antigravity) to natively use this library as a tool for reading local files and scraping webpages!
+
+#### Quick Start
+
+Run the following command anywhere on your machine to automatically install and configure the MarkdownGo MCP server for your favorite AI client! 
+
+*(No manual building or downloading required—Go will fetch it, compile it, and inject it into your client's configuration instantly!)*
+
+```bash
+# To install for Claude Desktop:
+go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client claude
+
+# To install for Cursor / Windsurf:
+go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client cursor
+```
+
+Restart your AI client and ask it: *"Read the markdown from https://wikipedia.org"* and watch it use MarkdownGo seamlessly!
+
+### 3. As a CLI Tool
 To install the MarkdownGo command-line interface globally on your machine:
 ```bash
 go install github.com/MSatyam-Mishra/markdown_go/cmd/markdown_go@latest
@@ -73,6 +100,7 @@ import (
 	"log"
 
 	"github.com/MSatyam-Mishra/markdown_go"
+	"github.com/MSatyam-Mishra/markdown_go/pkg/converter"
 )
 
 func main() {

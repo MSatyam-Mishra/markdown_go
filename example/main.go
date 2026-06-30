@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/MSatyam-Mishra/markdown_go"
+	"github.com/MSatyam-Mishra/markdown_go/pkg/converter"
 )
 
 func main() {
@@ -36,7 +37,7 @@ func main() {
 		if err == nil {
 			defer file.Close()
 			ext := strings.ToLower(filepath.Ext(handler.Filename))
-			opts := &markdown_go.Options{
+			opts := &converter.Options{
 				Extension: ext,
 				FileName:  handler.Filename,
 			}
