@@ -1,4 +1,4 @@
-module github.com/user/markdown_go
+module github.com/MSatyam-Mishra/markdown_go
 
 go 1.26.4
 

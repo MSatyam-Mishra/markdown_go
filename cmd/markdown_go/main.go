@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/user/markdown_go"
+	"github.com/MSatyam-Mishra/markdown_go"
 )
 
 func main() {
