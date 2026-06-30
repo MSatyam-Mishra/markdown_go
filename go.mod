@@ -5,6 +5,7 @@ go 1.26.4
 require (
 	code.sajari.com/docconv v1.3.8
 	github.com/JohannesKaufmann/html-to-markdown v1.6.0
+	github.com/chand1012/yt_transcript v0.1.1
 	github.com/dsoprea/go-exif/v3 v3.0.1
 	github.com/kkdai/youtube/v2 v2.10.6
 	github.com/ledongthuc/pdf v0.0.0-20250511090121-5959a4027728
