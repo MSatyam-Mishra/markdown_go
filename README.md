@@ -17,7 +17,7 @@ MarkdownGo currently supports conversion from:
 - **ZIP files** (Iterates over all internal contents concurrently)
 - **Youtube URLs** (Extracts video transcripts, metadata, and descriptions)
 - **EPubs**
-- ... and more!
+
 
 ## Why Markdown?
 Markdown is extremely close to plain text with minimal markup or formatting, yet it still provides a way to represent important document structure. Mainstream LLMs natively "speak" Markdown and often incorporate it into their responses unprompted. This suggests they have been trained on vast amounts of Markdown-formatted text and understand it well. As a side benefit, Markdown conventions are also highly token-efficient.
