@@ -138,25 +138,38 @@ func injectAntigravitySkill() error {
 	skillPath := filepath.Join(skillDir, "SKILL.md")
 	content := `---
 name: markdown_go_mcp
-description: "A native tool to convert local files (PDF, PPTX, DOCX, ZIP) and URLs (Webpages, Youtube Videos) into perfectly formatted markdown."
+description: "Native tool to convert local files (PDF, PPTX, DOCX, ZIP) and URLs (Webpages, Youtube Videos) perfectly into markdown."
 ---
 
 # markdown_go_mcp
 
-This skill runs an MCP server that grants agents the ability to extract text and data from local files or websites and convert them perfectly into markdown.
+You have access to a powerful Model Context Protocol (MCP) server that extracts text and data from local files or websites and converts them into markdown.
 
-## Usage
+## When to use this skill
+Use this skill whenever the user asks you to:
+- Read or extract text from a **PDF, Word document (.docx), PowerPoint (.pptx), or Excel file**.
+- Scrape or read a **web page** (URL).
+- Extract a transcript and metadata from a **YouTube video** (URL).
+- Read contents recursively from a **ZIP file**.
 
-When an agent needs to read a PDF, Word document, Excel file, ZIP file, or fetch a Youtube Transcript/Web Page, they should call this MCP server.
+## How to use this tool
 
-**Server Name:** ` + "`markdown_go_mcp`" + `
+The MCP server exposes a tool called ` + "`convert_to_markdown`" + `.
 
-**Tools Provided:**
-- ` + "`convert_to_markdown(target: string)`" + `: Converts the target into markdown text.
+### Arguments
+The tool requires a single argument:
+- ` + "`target`" + ` (string): This must be either a **fully qualified URL** (e.g. "https://en.wikipedia.org/...") or an **absolute local file path** (e.g. "C:/Users/name/document.pdf").
 
-## Configuration
+### Execution
+Depending on how the server is registered in your environment, you can call it directly if it's eager-loaded (` + "`markdown_go_convert_to_markdown`" + `), or use the ` + "`call_mcp_tool`" + ` tool with:
+- **ServerName**: ` + "`markdown_go`" + `
+- **ToolName**: ` + "`convert_to_markdown`" + `
+- **Arguments**: ` + "`{\"target\": \"<url_or_absolute_path>\"}`" + `
 
-To run this MCP server in Cursor, Claude Desktop, or Windsurf, configure your mcp.json to execute the built binary or run ` + "`go run ./cmd/mcp_server/main.go`" + `.
+### Handling the Output
+The tool will return the raw markdown string. 
+1. **Do not** attempt to summarize the entire text if the user wants an exact translation.
+2. If the text is extremely large, use it to answer the user's specific questions rather than printing it all out.
 `
 
 	err = os.WriteFile(skillPath, []byte(content), 0644)
@@ -164,6 +177,6 @@ To run this MCP server in Cursor, Claude Desktop, or Windsurf, configure your mc
 		return err
 	}
 
-	fmt.Printf("Created Antigravity skill at %s\n", skillPath)
+	fmt.Printf("Created detailed Antigravity skill at %s\n", skillPath)
 	return nil
 }
