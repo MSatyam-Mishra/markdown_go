@@ -1,0 +1,27 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+bin/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Workspace/IDE
+.idea/
+.vscode/
+*.swp
+
+# Agent Configurations
+.agents/
+.cursor/
+.kiro/
+
+# Go workspaces
+go.work
+go.work.sum
