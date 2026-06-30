@@ -53,6 +53,12 @@ go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client claude
 
 # To install for Cursor / Windsurf:
 go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client cursor
+
+# To install for Kiro IDE:
+go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client kiro
+
+# To install for Antigravity:
+go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client antigravity
 ```
 
 Restart your AI client and ask it: *"Read the markdown from https://wikipedia.org"* and watch it use MarkdownGo seamlessly!

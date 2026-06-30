@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	client := flag.String("client", "", "The AI client to configure (claude, cursor)")
+	client := flag.String("client", "", "The AI client to configure (claude, cursor, kiro, antigravity)")
 	flag.Parse()
 
 	if *client == "" {
@@ -19,7 +19,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	configPath := getConfigPath(*client)
+	clientLower := strings.ToLower(*client)
+
+	if clientLower == "antigravity" {
+		err := injectAntigravitySkill()
+		if err != nil {
+			fmt.Printf("Failed to inject Antigravity skill: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("Successfully installed MarkdownGo MCP server for Antigravity!")
+		return
+	}
+
+	configPath := getConfigPath(clientLower)
 	if configPath == "" {
 		fmt.Printf("Error: Unsupported client '%s' or operating system.\n", *client)
 		os.Exit(1)
@@ -39,7 +51,6 @@ func main() {
 
 func getConfigPath(client string) string {
 	home, _ := os.UserHomeDir()
-	client = strings.ToLower(client)
 
 	switch client {
 	case "claude":
@@ -52,8 +63,10 @@ func getConfigPath(client string) string {
 			// Linux/Other
 			return filepath.Join(home, ".config", "Claude", "claude_desktop_config.json")
 		}
-	case "cursor":
+	case "cursor", "windsurf":
 		return filepath.Join(home, ".cursor", "mcp.json")
+	case "kiro":
+		return filepath.Join(home, ".kiro", "settings", "mcp.json")
 	}
 	return ""
 }
@@ -81,7 +94,12 @@ func injectMCPConfig(configPath string) error {
 	}
 
 	// Ensure mcpServers object exists
-	mcpServers, ok := config["mcpServers"].(map[string]interface{})
+	mcpServersAny, ok := config["mcpServers"]
+	var mcpServers map[string]interface{}
+	
+	if ok {
+		mcpServers, ok = mcpServersAny.(map[string]interface{})
+	}
 	if !ok {
 		mcpServers = make(map[string]interface{})
 		config["mcpServers"] = mcpServers
@@ -103,4 +121,49 @@ func injectMCPConfig(configPath string) error {
 	}
 
 	return os.WriteFile(configPath, newData, 0644)
+}
+
+func injectAntigravitySkill() error {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+
+	skillDir := filepath.Join(home, ".gemini", "config", "skills", "markdown_go_mcp")
+	err = os.MkdirAll(skillDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	skillPath := filepath.Join(skillDir, "SKILL.md")
+	content := `---
+name: markdown_go_mcp
+description: "A native tool to convert local files (PDF, PPTX, DOCX, ZIP) and URLs (Webpages, Youtube Videos) into perfectly formatted markdown."
+---
+
+# markdown_go_mcp
+
+This skill runs an MCP server that grants agents the ability to extract text and data from local files or websites and convert them perfectly into markdown.
+
+## Usage
+
+When an agent needs to read a PDF, Word document, Excel file, ZIP file, or fetch a Youtube Transcript/Web Page, they should call this MCP server.
+
+**Server Name:** ` + "`markdown_go_mcp`" + `
+
+**Tools Provided:**
+- ` + "`convert_to_markdown(target: string)`" + `: Converts the target into markdown text.
+
+## Configuration
+
+To run this MCP server in Cursor, Claude Desktop, or Windsurf, configure your mcp.json to execute the built binary or run ` + "`go run ./cmd/mcp_server/main.go`" + `.
+`
+
+	err = os.WriteFile(skillPath, []byte(content), 0644)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Created Antigravity skill at %s\n", skillPath)
+	return nil
 }
