@@ -1,5 +1,5 @@
 # MarkdownGo
-
+[![Go Reference](https://pkg.go.dev/badge/github.com/MSatyam-Mishra/markdown_go.svg)](https://pkg.go.dev/github.com/MSatyam-Mishra/markdown_go)
 **MarkdownGo** is a lightweight, high-performance Go utility for converting various files to Markdown for use with LLMs and related text analysis pipelines. 
 
 Inspired by Microsoft's Python-based *MarkItDown*, this library is built natively in Go. By leveraging Go's concurrency model (goroutines), MarkdownGo provides fast conversions—especially when extracting and converting files recursively from within ZIP archives.

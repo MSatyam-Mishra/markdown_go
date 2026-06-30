@@ -1,3 +1,4 @@
+// Package markdown_go provides a lightweight, high-performance Go utility for converting various files to Markdown for use with LLMs and related text analysis pipelines.
 package markdown_go
 
 import (
