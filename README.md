@@ -11,10 +11,11 @@ MarkdownGo currently supports conversion from:
 - **Word** (.docx)
 - **Excel**
 - **Images** (EXIF metadata & OCR support)
-- **HTML**
+- **HTML** (Local files)
+- **Web URLs** (Scrapes generic HTML web pages perfectly into markdown)
 - **Text-based formats** (CSV, JSON, XML)
 - **ZIP files** (Iterates over all internal contents concurrently)
-- **Youtube URLs** (Extracts video metadata and descriptions)
+- **Youtube URLs** (Extracts video transcripts, metadata, and descriptions)
 - **EPubs**
 - ... and more!
 
@@ -52,6 +53,11 @@ markdown_go -i path-to-file.pdf -o document.md
 Extract metadata and text from a YouTube URL:
 ```bash
 markdown_go -u "https://youtube.com/watch?v=..."
+```
+
+Extract content from any generic website:
+```bash
+markdown_go -u "https://wikipedia.org/..."
 ```
 
 ### Go API
@@ -92,7 +98,8 @@ result, err := md.ConvertURL(ctx, "https://youtube.com/watch?v=...")
 
 ## Example Web App
 
-We have also provided a beautiful, fully-functional Web UI frontend to test out conversions!
+We have also provided a beautiful, fully-functional Web UI frontend to test out conversions! 
+The UI is built using modern **Shadcn UI** aesthetics (Vercel style), featuring a high-contrast design, clean rounded cards, and full **Dark Mode / Light Mode** support!
 
 To run it locally:
 ```bash
