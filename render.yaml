@@ -1,7 +1,7 @@
 services:
   - type: web
     name: markdown-go-ui
-    env: docker
-    dockerfilePath: Dockerfile
+    env: go
+    buildCommand: "go build -o app ./example/main.go"
+    startCommand: "cd example && ../app"
     plan: free
-    region: oregon

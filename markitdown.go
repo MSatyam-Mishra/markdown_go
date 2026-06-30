@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -81,16 +82,35 @@ func (m *MarkItDown) ConvertFile(ctx context.Context, path string) (string, erro
 	return m.Convert(ctx, file, opts)
 }
 
-// ConvertURL handles URL inputs, delegating YouTube URLs to YoutubeConverter.
+// ConvertURL handles URL inputs, delegating YouTube URLs to YoutubeConverter, or fetching general webpages.
 func (m *MarkItDown) ConvertURL(ctx context.Context, urlStr string) (string, error) {
 	if strings.Contains(urlStr, "youtube.com") || strings.Contains(urlStr, "youtu.be") {
 		ytConv := &YoutubeConverter{}
 		opts := &Options{URL: urlStr}
 		return ytConv.Convert(ctx, nil, opts)
 	}
-	// For other URLs, you would perform an HTTP GET, detect the MIME type, 
-	// map it to an extension, and call m.Convert.
-	return "", fmt.Errorf("unsupported URL or non-youtube URL not implemented yet")
+
+	// Fetch generic web page
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, urlStr, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	contentType := resp.Header.Get("Content-Type")
+	// If it's HTML, convert it
+	if strings.Contains(strings.ToLower(contentType), "text/html") {
+		htmlConv := &HTMLConverter{}
+		return htmlConv.Convert(ctx, resp.Body, &Options{Extension: ".html", URL: urlStr})
+	}
+
+	return "", fmt.Errorf("unsupported content type from URL: %s", contentType)
 }
 
 // Convert processes an io.Reader stream using the appropriate converter based on Options.
