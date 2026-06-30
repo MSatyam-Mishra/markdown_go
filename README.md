@@ -61,6 +61,14 @@ go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client kiro
 go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client antigravity
 ```
 
+**Scope Options:**
+By default, the installer configures the MCP server globally on your machine. You can pass the `--scope project` flag to install it only in your current workspace directory (e.g., creating a local `.agents` or `.cursor` configuration).
+
+```bash
+# Example: Install only for the current project
+go run github.com/MSatyam-Mishra/markdown_go/cmd/mcp_init@latest --client cursor --scope project
+```
+
 Restart your AI client and ask it: *"Read the markdown from https://wikipedia.org"* and watch it use MarkdownGo seamlessly!
 
 ### 3. As a CLI Tool
@@ -151,3 +159,61 @@ MarkdownGo performs I/O with the privileges of the current process. Like `os.Ope
 ## Contributing
 
 This project welcomes contributions and suggestions. Feel free to submit PRs, add support for more APIs (like Azure Document Intelligence or OpenAI Whisper), or expand the URL conversion capabilities!
+
+## API Documentation ¶
+
+### Types ¶
+
+#### type MarkItDown
+```go
+type MarkItDown struct
+```
+MarkItDown is the main orchestrator for conversions.
+
+#### func NewMarkItDown
+```go
+func NewMarkItDown() *MarkItDown
+```
+NewMarkItDown initializes a new MarkItDown instance with all default converters registered (HTML, PDF, Word, Excel, ZIP, EPub, etc.).
+
+#### func (*MarkItDown) ConvertFile
+```go
+func (m *MarkItDown) ConvertFile(ctx context.Context, path string) (string, error)
+```
+ConvertFile reads a local file and dynamically converts it to markdown based on its file extension.
+
+#### func (*MarkItDown) ConvertURL
+```go
+func (m *MarkItDown) ConvertURL(ctx context.Context, url string) (string, error)
+```
+ConvertURL scrapes a webpage or YouTube video and extracts its contents and transcript perfectly into markdown.
+
+---
+
+### Package `converter` ¶
+
+#### type Converter
+```go
+type Converter interface {
+	Convert(ctx context.Context, r io.Reader, opts *Options) (string, error)
+}
+```
+Converter is the interface that wraps the Convert method for specific format implementations.
+
+#### type ConverterAPI
+```go
+type ConverterAPI interface {
+	Convert(ctx context.Context, r io.Reader, opts *Options) (string, error)
+}
+```
+ConverterAPI is the core orchestrator interface that allows plugins (like ZipConverter) to recursively convert embedded files without causing import cycles.
+
+#### type Options
+```go
+type Options struct {
+	Extension string
+	FileName  string
+	URL       string
+}
+```
+Options provides metadata and configuration for the conversion process.

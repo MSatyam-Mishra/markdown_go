@@ -8,10 +8,13 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/AlecAivazis/survey/v2"
 )
 
 func main() {
 	client := flag.String("client", "", "The AI client to configure (claude, cursor, kiro, antigravity)")
+	scope := flag.String("scope", "", "The installation scope (global or project)")
 	flag.Parse()
 
 	if *client == "" {
@@ -19,21 +22,45 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *scope == "" {
+		prompt := &survey.Select{
+			Message: "Select installation scope:",
+			Options: []string{"Global (Recommended)", "Project (Current Directory Only)"},
+		}
+		var choice string
+		err := survey.AskOne(prompt, &choice)
+		if err != nil {
+			fmt.Printf("Prompt failed: %v\n", err)
+			os.Exit(1)
+		}
+		if strings.HasPrefix(choice, "Project") {
+			*scope = "project"
+		} else {
+			*scope = "global"
+		}
+	}
+
 	clientLower := strings.ToLower(*client)
+	scopeLower := strings.ToLower(*scope)
+
+	if scopeLower != "global" && scopeLower != "project" {
+		fmt.Println("Error: --scope flag must be either 'global' or 'project'")
+		os.Exit(1)
+	}
 
 	if clientLower == "antigravity" {
-		err := injectAntigravitySkill()
+		err := injectAntigravitySkill(scopeLower)
 		if err != nil {
 			fmt.Printf("Failed to inject Antigravity skill: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("Successfully installed MarkdownGo MCP server for Antigravity!")
+		fmt.Printf("Successfully installed MarkdownGo MCP server for Antigravity (%s scope)!\n", scopeLower)
 		return
 	}
 
-	configPath := getConfigPath(clientLower)
+	configPath := getConfigPath(clientLower, scopeLower)
 	if configPath == "" {
-		fmt.Printf("Error: Unsupported client '%s' or operating system.\n", *client)
+		fmt.Printf("Error: Unsupported client '%s' or scope '%s'.\n", *client, scopeLower)
 		os.Exit(1)
 	}
 
@@ -45,15 +72,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Successfully installed MarkdownGo MCP server for %s!\n", *client)
+	fmt.Printf("Successfully installed MarkdownGo MCP server for %s (%s scope)!\n", *client, scopeLower)
 	fmt.Println("Please restart your AI client to apply the changes.")
 }
 
-func getConfigPath(client string) string {
+func getConfigPath(client, scope string) string {
 	home, _ := os.UserHomeDir()
+	pwd, _ := os.Getwd()
 
 	switch client {
 	case "claude":
+		if scope == "project" {
+			fmt.Println("Warning: Claude Desktop does not support project-level configurations natively. Installing globally instead.")
+		}
 		if runtime.GOOS == "windows" {
 			appData := os.Getenv("APPDATA")
 			return filepath.Join(appData, "Claude", "claude_desktop_config.json")
@@ -64,8 +95,14 @@ func getConfigPath(client string) string {
 			return filepath.Join(home, ".config", "Claude", "claude_desktop_config.json")
 		}
 	case "cursor", "windsurf":
+		if scope == "project" {
+			return filepath.Join(pwd, ".cursor", "mcp.json")
+		}
 		return filepath.Join(home, ".cursor", "mcp.json")
 	case "kiro":
+		if scope == "project" {
+			return filepath.Join(pwd, ".kiro", "settings", "mcp.json")
+		}
 		return filepath.Join(home, ".kiro", "settings", "mcp.json")
 	}
 	return ""
@@ -123,14 +160,23 @@ func injectMCPConfig(configPath string) error {
 	return os.WriteFile(configPath, newData, 0644)
 }
 
-func injectAntigravitySkill() error {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
+func injectAntigravitySkill(scope string) error {
+	var skillDir string
+	if scope == "global" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+		skillDir = filepath.Join(home, ".gemini", "config", "skills", "markdown_go_mcp")
+	} else {
+		pwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		skillDir = filepath.Join(pwd, ".agents", "skills", "markdown_go_mcp")
 	}
 
-	skillDir := filepath.Join(home, ".gemini", "config", "skills", "markdown_go_mcp")
-	err = os.MkdirAll(skillDir, 0755)
+	err := os.MkdirAll(skillDir, 0755)
 	if err != nil {
 		return err
 	}
